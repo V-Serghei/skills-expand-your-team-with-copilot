@@ -568,6 +568,12 @@ document.addEventListener("DOMContentLoaded", () => {
           </div>
         `
         }
+        <div class="share-buttons">
+          <span class="share-label">Share:</span>
+          <button class="share-button share-twitter" data-activity="${name}" title="Share on X (Twitter)" aria-label="Share on X (Twitter)">🐦</button>
+          <button class="share-button share-facebook" data-activity="${name}" title="Share on Facebook" aria-label="Share on Facebook">📘</button>
+          <button class="share-button share-copy" data-activity="${name}" title="Copy link" aria-label="Copy link">🔗</button>
+        </div>
       </div>
     `;
 
@@ -586,6 +592,41 @@ document.addEventListener("DOMContentLoaded", () => {
         });
       }
     }
+
+    // Add click handlers for social share buttons
+    const shareUrl = `${window.location.origin}${window.location.pathname}?activity=${encodeURIComponent(name)}`;
+    const shareText = `Check out "${name}" at Mergington High School!`;
+
+    activityCard.querySelector(".share-twitter").addEventListener("click", () => {
+      const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`;
+      window.open(twitterUrl, "_blank", "noopener,noreferrer");
+    });
+
+    activityCard.querySelector(".share-facebook").addEventListener("click", () => {
+      const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`;
+      window.open(facebookUrl, "_blank", "noopener,noreferrer");
+    });
+
+    activityCard.querySelector(".share-copy").addEventListener("click", (event) => {
+      navigator.clipboard.writeText(shareUrl).then(() => {
+        const btn = event.currentTarget;
+        const original = btn.title;
+        btn.title = "Copied!";
+        btn.textContent = "✅";
+        setTimeout(() => {
+          btn.title = original;
+          btn.textContent = "🔗";
+        }, 1500);
+      }).catch(() => {
+        const btn = event.currentTarget;
+        btn.title = "Could not copy link";
+        btn.textContent = "❌";
+        setTimeout(() => {
+          btn.title = "Copy link";
+          btn.textContent = "🔗";
+        }, 1500);
+      });
+    });
 
     activitiesList.appendChild(activityCard);
   }
